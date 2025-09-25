@@ -1,0 +1,22 @@
+---
+- name: Full OS Upgrade for Cluster
+  hosts: cluster
+  become: yes
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+
+    - name: Reboot worker if needed (skip localhost)
+      reboot:
+        reboot_timeout: 300
+      when: inventory_hostname != 'localhost'
+
