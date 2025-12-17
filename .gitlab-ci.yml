@@ -1,0 +1,25 @@
+stages:
+  - test
+  - deploy
+
+variables:
+  ANSIBLE_CONFIG: ansible.cfg
+
+before_script:
+  - apt-get update -y
+  - apt-get install -y python3-pip sshpass
+  - pip3 install ansible
+
+# Test stage: controleer syntax van alle playbooks
+syntax_check:
+  stage: test
+  script:
+    - ansible-playbook --syntax-check *.yml
+
+# Deploy stage: voer playbooks uit (op remote hosts via SSH)
+deploy:
+  stage: deploy
+  script:
+    - ansible-playbook -i hosts.ini site.yml
+  only:
+    - main
